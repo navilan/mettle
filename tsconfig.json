@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "compilerOptions": {
+    "target": "ES2018",
+    "baseUrl": ".",
+    "paths": {
+      "@neob/test-utils/*": ["packages/test-utils/src/*"],
+      "@neob/*": ["packages/*/src"]
+    }
+  }
+}

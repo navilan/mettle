@@ -1,0 +1,12 @@
+{
+  "name": "mettle",
+  "version": "0.0.1",
+  "description": "A TypeScript DSL for generating github actions workflows",
+  "main": "index.js",
+  "repository": "https://github.com/navilan/mettle",
+  "author": "navilan",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ]
+}

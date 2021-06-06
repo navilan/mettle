@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2018",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noErrorTruncation": true
+  },
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "bench/**/*",
+    "test/**/*",
+    "demo/**/*"
+  ]
+}

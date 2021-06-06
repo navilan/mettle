@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "files": [],
+  "compilerOptions": {
+    "target": "ES2018",
+    "jsx": "react",
+    "lib": [
+      "DOM"
+    ],
+    "plugins": [
+      {
+        "transform": "@effect-ts/tracing-plugin",
+        "moduleMap": {
+          "^src/(.*)": "(@mettle/cli): src/$1",
+          "^test/(.*)": "(@mettle/cli/test): test/$1"
+        }
+      },
+      {
+        "transform": "typescript-transform-paths"
+      }
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "name": "@mettle/core",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": "https://github.com/navilan/mettle.git",
+  "scripts": {
+    "clean": "rimraf build tsbuildinfo",
+    "build:lib": "ttsc --build  tsconfig.build.json && build-utils package",
+    "build:es6": "ttsc --build  tsconfig.es6.json && babel build/esm/ -d build/esm/ -s --plugins annotate-pure-calls && build-utils package-esm",
+    "build:post-process": "build-utils rewrite-source-maps && build-utils rewrite-locals && yarn prettier:lib",
+    "build": "yarn run build:lib && yarn run build:es6 && yarn run build:post-process",
+    "lint": "eslint . --ext .ts,.tsx",
+    "autofix": "yarn prettier && yarn lint --fix && yarn prettier",
+    "prettier": "prettier --write \"./{src,test,demo}/**/*.ts\"",
+    "prettier:lib": "prettier --write \"./build/**/*.js\"",
+    "tc": "cd $INIT_CWD && tsc --noEmit",
+    "demo": "ts-node --compiler ttypescript --project tsconfig.debug.json -r tsconfig-paths/register -r @effect-ts/system/Tracing/Enable",
+    "circular": "madge --circular --ts-config ./tsconfig.build.json --extensions ts ./src",
+    "debug": "ttsc -p tsconfig.debug.json",
+    "gen:types": "json2ts -i src/schemas/github-action.json -o src/schemas/github-action.d.ts && eslint --fix src/schemas/github-action.d.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "build"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@effect-ts/core": "^0.40.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.14.2",
+    "@effect-ts/build-utils": "^0.20.0",
+    "@effect-ts/jest": "^0.28.3",
+    "@types/jest": "^26.0.23",
+    "@types/js-yaml": "^4.0.1",
+    "@types/node": "^15.6.1",
+    "@typescript-eslint/eslint-plugin": "^4.25.0",
+    "@typescript-eslint/parser": "^4.25.0",
+    "babel-plugin-annotate-pure-calls": "^0.4.0",
+    "chalk": "^4.1.1",
+    "cpx": "^1.5.0",
+    "dtslint": "github:gcanti/dtslint",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-codegen": "^0.15.0",
+    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sort-destructure-keys": "^1.3.5",
+    "eslint-plugin-unused-imports": "^1.1.1",
+    "jest": "^27.0.4",
+    "json-schema-to-typescript": "^10.1.4",
+    "lerna": "^4.0.0",
+    "madge": "^4.0.0",
+    "prettier": "^2.3.0",
+    "reflect-metadata": "^0.1.13",
+    "testcontainers": "^7.11.0",
+    "ts-jest": "^27.0.2",
+    "ts-node": "^10.0.0",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.2.4",
+    "typescript-transform-paths": "^2.2.3",
+    "ultra-runner": "^3.10.3",
+    "yarn-deduplicate": "^3.0.0"
+  },
+  "config": {
+    "modules": [
+      "Language",
+      "Generator"
+    ]
+  }
+}
