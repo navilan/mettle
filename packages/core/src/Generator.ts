@@ -4,8 +4,9 @@ import { matchTag } from "@effect-ts/core/Utils"
 import * as Y from "js-yaml"
 
 import type * as L from "./Language"
-import type { GithubAction } from "./schemas/github-action"
+import type { Container, GithubAction } from "./schemas/github-action"
 
+// TODO: Add validation and error handling
 type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
   ? ElementType
   : never
@@ -139,7 +140,8 @@ function generateJob(job: L.Job): Job {
     generateEnv(job),
     generateX("needs", job),
     generateSteps(job),
-    generateRunsOn(job) // TODO: why is the ordering important
+    generateServices(job),
+    generateRunsOn(job)
   )
 }
 
@@ -164,6 +166,38 @@ function generateJobs<B>(workflow: L.Workflow): (self: B) => B & NeedsJobs {
   return generateX("jobs", workflow, { transform: makeJobs })
 }
 
+function generateService(service: L.Service): Container {
+  // @ts-expect-error
+  return pipe(
+    {},
+    generateEnv(service),
+    generateX("options", service),
+    generateX("ports", service),
+    generateX("image", service)
+  )
+}
+
+type NeedsServices = {
+  services: {
+    [serviceId: string]: Container
+  }
+}
+
+function makeServices(job: L.Job) {
+  return pipe(
+    job.services ?? [],
+    A.reduce({}, (col, svc) => ({
+      ...col,
+      [svc.id ?? ""]: generateService(svc)
+    }))
+  )
+}
+
+function generateServices<B>(job: L.Job): (self: B) => B & NeedsServices {
+  // @ts-expect-error
+  return generateX("services", job, { transform: makeServices })
+}
+
 function transformEvents<T extends L.HasEvents>(obj: T): EventDefinition {
   return pipe(
     obj.on ?? [],
@@ -184,7 +218,7 @@ function generateEvents<B, T extends L.HasEvents>(
   })
 }
 
-function generateWorkflow(workflow: L.Workflow): GithubAction {
+export function generateWorkflow(workflow: L.Workflow): GithubAction {
   return pipe(
     {},
     generateName(workflow),

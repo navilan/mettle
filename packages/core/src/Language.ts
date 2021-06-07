@@ -164,12 +164,21 @@ export function withValues<T extends HasValues>({
   })
 }
 
+export interface Container extends HasEnv {
+  image: string
+  options?: string
+  ports?: (string | number)[]
+}
+
+export interface Service extends Required<HasId>, Container {}
+
 export type Step = UsesStep | RunStep
 
 export interface Job extends HasName, HasId, HasEnv, IsConditional, Monitored {
-  readonly needs?: readonly string[]
   readonly runsOn: string
   readonly steps: readonly Step[]
+  readonly services?: Service[]
+  readonly needs?: readonly string[]
 }
 
 export function job(id: string): Partial<Job> & HasId {
@@ -197,6 +206,14 @@ export function step<T extends Partial<Job>>(s: Step) {
 
 export function steps<T extends Partial<Job>>(ss: Step[]) {
   return (self: T) => ({ ...self, steps: [...(self.steps ?? []), ...ss] })
+}
+
+export function service<T extends Partial<Job>>(s: Service) {
+  return (self: T) => ({ ...self, services: [...(self.services ?? []), s] })
+}
+
+export function services<T extends Partial<Job>>(ss: Service[]) {
+  return (self: T) => ({ ...self, services: [...(self.services ?? []), ss] })
 }
 
 export function jobs<T extends Partial<Workflow>>(js: Job[]) {

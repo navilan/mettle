@@ -111,6 +111,14 @@ describe("workflow", () => {
       jobs: {
         lint: {
           "runs-on": "ubuntu-latest",
+          services: {
+            postgres: {
+              image: "postgres:9.6",
+              ports: ["5432:5432"],
+              options:
+                "--health-cmd pg_isready\n--health-interval 10s\n--health-timeout 5s\n--health-retries 5"
+            }
+          },
           steps: [
             {
               name: "Checkout",
@@ -149,6 +157,12 @@ describe("workflow", () => {
       L.jobs([
         pipe(
           L.job("lint"),
+          L.service({
+            id: "postgres",
+            image: lintJob.services.postgres.image,
+            options: lintJob.services.postgres.options,
+            ports: lintJob.services.postgres.ports
+          }),
           L.runsOn(lintJob["runs-on"]),
           L.steps([
             pipe(L.uses(lintJob.steps[0].uses ?? ""), L.named(lintJob.steps[0].name)),
