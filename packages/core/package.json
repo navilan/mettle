@@ -17,7 +17,7 @@
     "demo": "ts-node --compiler ttypescript --project tsconfig.debug.json -r tsconfig-paths/register -r @effect-ts/system/Tracing/Enable",
     "circular": "madge --circular --ts-config ./tsconfig.build.json --extensions ts ./src",
     "debug": "ttsc -p tsconfig.debug.json",
-    "gen:types": "json2ts -i src/schemas/github-action.json -o src/schemas/github-action.d.ts && eslint --fix src/schemas/github-action.d.ts"
+    "gen:types": "json2ts -i src/schemas/github-action.json -o src/schemas/github-action.d.ts --ignoreMinAndMaxItems && eslint --fix src/schemas/github-action.d.ts"
   },
   "publishConfig": {
     "access": "public",

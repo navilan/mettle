@@ -34,5 +34,19 @@
   "editor.parameterHints.enabled": true,
   "files.watcherExclude": {
     "**/target": true
-  }
+  },
+  "cSpell.words": [
+    "autofix",
+    "codegen",
+    "destructure",
+    "dtslint",
+    "entrypoint",
+    "gcanti",
+    "gollum",
+    "pwsh",
+    "testcontainers",
+    "tsbuildinfo",
+    "ttsc",
+    "ttypescript"
+  ]
 }

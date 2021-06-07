@@ -98,17 +98,40 @@ describe("workflow", () => {
   it("generates YAML", () => {
     const expected = {
       name: "github action",
-      on: {
-        push: { branches: ["master"] },
-        pull_request: { tags: ["ci"] }
-      },
       env: {
         MY_SECRET1: "MY_VALUE1",
         MY_SECRET2: "MY_VALUE2",
         MY_SECRET3: "MY_VALUE3",
         MY_SECRET4: "MY_VALUE4"
+      },
+      on: {
+        push: { branches: ["master"] },
+        pull_request: { tags: ["ci"] }
+      },
+      jobs: {
+        lint: {
+          "runs-on": "ubuntu-latest",
+          steps: [
+            {
+              name: "Checkout",
+              uses: "actions/checkout@v1"
+            },
+            {
+              name: "Setup Node v12",
+              uses: "actions/setup-node@v1",
+              with: {
+                "node-version": "12.x"
+              }
+            },
+            {
+              name: "Lint",
+              run: "npm install -g yarn\nyarn\nyarn lint"
+            }
+          ]
+        }
       }
     }
+    const lintJob = expected.jobs["lint"]
     const w: L.Workflow = pipe(
       L.workflow(expected.name),
       L.onPush({
@@ -122,8 +145,30 @@ describe("workflow", () => {
       L.withEnv({
         MY_SECRET3: "MY_VALUE3",
         MY_SECRET4: "MY_VALUE4"
-      })
+      }),
+      L.jobs([
+        pipe(
+          L.job("lint"),
+          L.runsOn(lintJob["runs-on"]),
+          L.steps([
+            pipe(L.uses(lintJob.steps[0].uses ?? ""), L.named(lintJob.steps[0].name)),
+            pipe(
+              L.uses(lintJob.steps[1].uses ?? ""),
+              L.named(lintJob.steps[1].name),
+              L.withValues({ params: lintJob.steps[1].with ?? {} })
+            ),
+            pipe(
+              L.run({
+                command: lintJob.steps[2].run ?? ""
+              }),
+              L.named(lintJob.steps[2].name)
+            )
+          ])
+        )
+      ])
     )
-    expect(pipe(w, G.toYAML())).toEqual(Y.dump(expected))
+    expect(pipe(w, G.toYAML({ sortKeys: true }))).toEqual(
+      Y.dump(expected, { sortKeys: true })
+    )
   })
 })
